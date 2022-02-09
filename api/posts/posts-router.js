@@ -95,4 +95,44 @@ postRouter.put('/:id', async (req, res) => {
 	}
 });
 
+postRouter.delete('/:id', async (req, res) => {
+	try {
+		const { id } = req.params;
+		findById(id).then((post) => {
+			if (post) {
+				remove(post.id).then(() => {
+					res.status(200).json(post);
+				});
+			} else {
+				res
+					.status(404)
+					.json({ message: 'The post with the specified ID does not exist' });
+			}
+		});
+	} catch (err) {
+		res.status(500).json({ message: 'The post could not be removed' });
+	}
+});
+
+postRouter.get('/:id/comments', async (req, res) => {
+	try {
+		const { id } = req.params;
+		findById(id).then((post) => {
+			if (post) {
+				findPostComments(id).then((comments) => {
+					res.status(200).json(comments);
+				});
+			} else {
+				res
+					.status(404)
+					.json({ message: 'The post with the specified ID does not exist' });
+			}
+		});
+	} catch (err) {
+		res
+			.status(500)
+			.json({ message: 'The comments information could not be retrieved' });
+	}
+});
+
 module.exports = postRouter;
